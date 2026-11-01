@@ -1,14 +1,7 @@
-from __future__ import annotations
+from typing import Any
 
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from ...src.core.domain.health import HealthStatus, SystemHealth
-    from ...src.core.ports.driven.probe_port import SystemProbePort
-else:
-    HealthStatus = Any
-    SystemHealth = Any
-    SystemProbePort = object
+from ed_models.core.domain.health import HealthStatus, SystemHealth
+from ed_models.core.ports.driven.probe_port import SystemProbePort
 
 
 class FakeSystemProbeAdapter(SystemProbePort):
@@ -17,7 +10,7 @@ class FakeSystemProbeAdapter(SystemProbePort):
     Enables testing application use cases completely offline without invoking OS APIs.
     """
 
-    def __init__(self, default_status: HealthStatus = "healthy") -> None:
+    def __init__(self, default_status: HealthStatus = HealthStatus.HEALTHY) -> None:
         self._status = default_status
         self._details: dict[str, Any] = {"mode": "in_memory_fake"}
         self._failure_mode = False
@@ -26,7 +19,7 @@ class FakeSystemProbeAdapter(SystemProbePort):
         """Returns simulated in-memory system health."""
         if self._failure_mode:
             return SystemHealth(
-                status="unhealthy",
+                status=HealthStatus.UNHEALTHY,
                 service_name=service_name,
             )
         return SystemHealth(
@@ -44,6 +37,6 @@ class FakeSystemProbeAdapter(SystemProbePort):
 
     def reset(self) -> None:
         """Resets simulated in-memory state."""
-        self._status = "healthy"
+        self._status = HealthStatus.HEALTHY
         self._details = {"mode": "in_memory_fake"}
         self._failure_mode = False
