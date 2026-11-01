@@ -16,3 +16,4 @@ This directory maintains immutable Architectural Decision Records (ADRs) conform
 ## Records Index
 
 * [ADR 0001: ed-models Pure Domain Architecture, Catalog Codification, and Driving Facade](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/adr/0001_ed_models_core_game_logic_and_catalog_architecture.md)
+* [ADR 0002: Domain Scope and Boundary Enforcement Mechanics](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/adr/0002_domain_scope_and_boundary_enforcement.md)
