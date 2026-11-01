@@ -64,6 +64,20 @@ def test_facade_token_normalization_and_telemetry() -> None:
     assert telemetry.is_on_foot is True
     assert telemetry.cargo == 2
 
+    # Journal event parsing
+    event = facade.parse_journal_event(
+        {
+            "timestamp": "2026-11-01T23:30:00Z",
+            "event": "FSDJump",
+            "StarSystem": "Sol",
+            "SystemAddress": 128000000,
+            "JumpDist": 42.15,
+        }
+    )
+    assert event.event == "FSDJump"
+    assert getattr(event, "StarSystem", None) == "Sol"
+    assert getattr(event, "JumpDist", None) == 42.15
+
 
 def test_facade_pure_math_and_interop() -> None:
     """Verifies FSD jump calculation and interop serialization via facade."""

@@ -14,6 +14,8 @@ from ed_models.core.domain.engineering.blueprint import (
     ExperimentalEffect,
 )
 from ed_models.core.domain.engineering.engineer import EngineerEntity
+from ed_models.core.domain.events.base import JournalEvent
+from ed_models.core.domain.events.parser import parse_journal_event
 from ed_models.core.domain.flight.jump import (
     JumpCalculationParameters,
     JumpCalculationResult,
@@ -126,6 +128,10 @@ class EliteDomainFacade:
             cargo=cargo,
             legal_state=legal_state,
         )
+
+    def parse_journal_event(self, payload: dict[str, Any]) -> JournalEvent:
+        """Parses a raw Frontier journal payload into a typed JournalEvent instance."""
+        return parse_journal_event(payload)
 
     # --- Pillar 3: Pure Mathematical Interactors ---
 

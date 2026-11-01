@@ -1,5 +1,7 @@
 """Frontier Player Journal event model generated from kayahr/ed-journal."""
 
+from __future__ import annotations
+
 import typing
 from dataclasses import dataclass
 from enum import StrEnum
