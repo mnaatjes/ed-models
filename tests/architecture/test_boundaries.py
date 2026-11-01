@@ -243,7 +243,12 @@ def test_domain_entities_are_self_validating() -> None:
                         decorator_names.add(d.func.id)
                 base_names = {b.id for b in node.bases if isinstance(b, ast.Name)}
 
-                is_enum = "StrEnum" in base_names or "Enum" in base_names
+                is_enum = (
+                    "StrEnum" in base_names
+                    or "Enum" in base_names
+                    or "IntFlag" in base_names
+                    or "Flag" in base_names
+                )
                 is_dataclass = "dataclass" in decorator_names
 
                 assert (
