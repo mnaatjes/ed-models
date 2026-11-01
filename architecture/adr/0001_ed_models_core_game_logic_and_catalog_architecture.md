@@ -205,6 +205,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 import math
 
+
 class StarType(StrEnum):
     O = "O"
     B = "B"
@@ -216,11 +217,13 @@ class StarType(StrEnum):
     NEUTRON = "N"
     BLACK_HOLE = "H"
 
+
 class BodyType(StrEnum):
     STAR = "Star"
     PLANET = "Planet"
     MOON = "Moon"
     ASTEROID_RING = "AsteroidRing"
+
 
 @dataclass(frozen=True, slots=True)
 class Coordinates3D:
@@ -229,7 +232,10 @@ class Coordinates3D:
     z: float
 
     def distance_to(self, other: "Coordinates3D") -> float:
-        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2 + (self.z - other.z)**2)
+        return math.sqrt(
+            (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class CelestialBody:
@@ -241,6 +247,7 @@ class CelestialBody:
     is_landable: bool = False
     gravity_g: float | None = None
     earth_masses: float | None = None
+
 
 @dataclass(frozen=True, slots=True)
 class StarSystem:
@@ -258,6 +265,7 @@ class StarSystem:
 from dataclasses import dataclass
 from enum import StrEnum
 
+
 class CommodityCategory(StrEnum):
     CHEMICALS = "Chemicals"
     CONSUMER_ITEMS = "Consumer Items"
@@ -274,12 +282,14 @@ class CommodityCategory(StrEnum):
     WASTE = "Waste"
     WEAPONS = "Weapons"
 
+
 @dataclass(frozen=True, slots=True)
 class CommodityEntity:
     id: int
     symbol: str
     category: CommodityCategory
     name: str
+
 
 class CommodityNormalizer:
     def __init__(self, catalog: dict[str, CommodityEntity]):
@@ -296,10 +306,12 @@ class CommodityNormalizer:
 from dataclasses import dataclass
 from enum import IntEnum, StrEnum
 
+
 class PadSize(StrEnum):
     SMALL = "Small"
     MEDIUM = "Medium"
     LARGE = "Large"
+
 
 class ModuleRating(StrEnum):
     A = "A"
@@ -307,6 +319,7 @@ class ModuleRating(StrEnum):
     C = "C"
     D = "D"
     E = "E"
+
 
 class ModuleClass(IntEnum):
     ZERO = 0
@@ -319,6 +332,7 @@ class ModuleClass(IntEnum):
     SEVEN = 7
     EIGHT = 8
 
+
 @dataclass(frozen=True, slots=True)
 class ShipHull:
     symbol: str
@@ -326,6 +340,7 @@ class ShipHull:
     manufacturer: str
     pad_size: PadSize
     base_hull_mass: float
+
 
 @dataclass(frozen=True, slots=True)
 class ShipModule:
@@ -336,6 +351,7 @@ class ShipModule:
     rating: ModuleRating
     mass_tons: float
     base_cost_cr: int
+
 
 class ShipNormalizer:
     def __init__(self, hulls: dict[str, ShipHull]):
@@ -352,10 +368,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
+
 @dataclass(frozen=True, slots=True)
 class JournalEvent:
     timestamp: datetime
     event: str
+
 
 @dataclass(frozen=True, slots=True)
 class FsdJumpEvent(JournalEvent):
@@ -365,6 +383,7 @@ class FsdJumpEvent(JournalEvent):
     jump_dist: float
     fuel_used: float
     fuel_level: float
+
 
 @dataclass(frozen=True, slots=True)
 class StatusFlags:
@@ -392,6 +411,7 @@ class StatusFlags:
             night_vision=bool(flags & (1 << 28)),
         )
 
+
 @dataclass(frozen=True, slots=True)
 class ShipStatus:
     timestamp: datetime
@@ -409,11 +429,13 @@ class ShipStatus:
 from dataclasses import dataclass
 from enum import StrEnum
 
+
 class Allegiance(StrEnum):
     FEDERATION = "Federation"
     EMPIRE = "Empire"
     ALLIANCE = "Alliance"
     INDEPENDENT = "Independent"
+
 
 class Government(StrEnum):
     DEMOCRACY = "Democracy"
@@ -422,10 +444,12 @@ class Government(StrEnum):
     PATRONAGE = "Patronage"
     COMMUNISM = "Communism"
 
+
 class PowerState(StrEnum):
     CONTROL = "Control"
     EXPLOITED = "Exploited"
     EXPANSION = "Expansion"
+
 
 @dataclass(frozen=True, slots=True)
 class MinorFactionPresence:
@@ -442,11 +466,13 @@ class MinorFactionPresence:
 from dataclasses import dataclass
 from typing import Any
 
+
 @dataclass(frozen=True, slots=True)
 class JumpRangeProfile:
     unladen_ly: float
     laden_ly: float
     max_single_jump_ly: float
+
 
 @dataclass(frozen=True, slots=True)
 class TradeDangerousMarketRecord:
@@ -458,6 +484,7 @@ class TradeDangerousMarketRecord:
     buy_price_cr: int
     demand: int
     stock: int
+
 
 class TradeDangerousFormatter:
     @staticmethod
@@ -474,7 +501,9 @@ class TradeDangerousFormatter:
             "# Commodity               Sell        Buy       Demand      Stock",
         ]
         for r in records:
-            lines.append(f"{r.commodity_name:<24} {r.sell_price_cr:>8} {r.buy_price_cr:>10} {r.demand:>12} {r.stock:>10}")
+            lines.append(
+                f"{r.commodity_name:<24} {r.sell_price_cr:>8} {r.buy_price_cr:>10} {r.demand:>12} {r.stock:>10}"
+            )
         return "\n".join(lines) + "\n"
 ```
 

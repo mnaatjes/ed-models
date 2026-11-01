@@ -847,3 +847,141 @@ def test_dto_immutability_and_structural_purity() -> None:
                                 f"DTO {node.name} field uses forbidden mutable/framework type: "
                                 f"{ann_id}"
                             )
+
+
+def test_types_never_imports_events() -> None:
+    """Asserts that core.domain.types has ZERO imports from core.domain.events (HEXA-TRUTH-06)."""
+    pkg_root = _get_package_root()
+    types_dir = pkg_root / "core" / "domain" / "types"
+    pkg_name = pkg_root.name
+    forbidden_prefix = f"{pkg_name}.core.domain.events"
+
+    for py_file in types_dir.rglob("*.py"):
+        if not py_file.is_file():
+            continue
+        tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    assert not alias.name.startswith(
+                        forbidden_prefix
+                    ), f"{py_file.name} illegally imports event module: {alias.name}"
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                assert not node.module.startswith(
+                    forbidden_prefix
+                ), f"{py_file.name} illegally imports event module: {node.module}"
+
+
+def test_events_declare_kw_only_and_slots() -> None:
+    """Asserts that all event dataclasses declare kw_only=True and slots=True (RISK-03, RISK-04)."""
+    pkg_root = _get_package_root()
+    events_dir = pkg_root / "core" / "domain" / "events"
+
+    for py_file in events_dir.rglob("*.py"):
+        if not py_file.is_file() or py_file.name == "__init__.py":
+            continue
+        tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                # Check if decorated with dataclass
+                is_dataclass = False
+                has_kw_only = False
+                has_slots = False
+                for dec in node.decorator_list:
+                    func_name = None
+                    if isinstance(dec, ast.Name):
+                        func_name = dec.id
+                    elif isinstance(dec, ast.Call):
+                        if isinstance(dec.func, ast.Name):
+                            func_name = dec.func.id
+                        elif isinstance(dec.func, ast.Attribute):
+                            func_name = dec.func.attr
+                        for kw in dec.keywords:
+                            if kw.arg == "kw_only" and isinstance(kw.value, ast.Constant):
+                                if kw.value.value is True:
+                                    has_kw_only = True
+                            elif kw.arg == "slots" and isinstance(kw.value, ast.Constant):
+                                if kw.value.value is True:
+                                    has_slots = True
+                    if func_name == "dataclass":
+                        is_dataclass = True
+
+                if is_dataclass:
+                    assert has_kw_only, (
+                        f"Event dataclass {node.name} in {py_file.name} must declare kw_only=True "
+                        "to prevent inheritance argument ordering errors (ADR 0002 §4.3)"
+                    )
+                    assert has_slots, (
+                        f"Event dataclass {node.name} in {py_file.name} must declare slots=True "
+                        "to minimize memory overhead across stream processing (ADR 0002 §4.3)"
+                    )
+
+
+def test_value_objects_are_frozen() -> None:
+    """Asserts that spatial and value objects declare frozen=True and slots=True (HEXA-TRUTH-10)."""
+    pkg_root = _get_package_root()
+    spatial_dir = pkg_root / "core" / "domain" / "spatial"
+
+    for py_file in spatial_dir.rglob("*.py"):
+        if not py_file.is_file() or py_file.name == "__init__.py":
+            continue
+        tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                if node.name in ("Coordinates3D", "SystemCoordinates"):
+                    is_frozen = False
+                    is_slotted = False
+                    for dec in node.decorator_list:
+                        if isinstance(dec, ast.Call):
+                            for kw in dec.keywords:
+                                if (
+                                    kw.arg == "frozen"
+                                    and isinstance(kw.value, ast.Constant)
+                                    and kw.value.value is True
+                                ):
+                                    is_frozen = True
+                                elif (
+                                    kw.arg == "slots"
+                                    and isinstance(kw.value, ast.Constant)
+                                    and kw.value.value is True
+                                ):
+                                    is_slotted = True
+                    assert is_frozen and is_slotted, (
+                        f"Value object {node.name} in {py_file.name} must declare "
+                        "@dataclass(frozen=True, slots=True)"
+                    )
+
+
+def test_domain_has_zero_io_imports() -> None:
+    """Asserts that core.domain has ZERO network, disk, or framework I/O imports (HEXA-TRUTH-01)."""
+    pkg_root = _get_package_root()
+    domain_dir = pkg_root / "core" / "domain"
+    forbidden_modules = {
+        "requests",
+        "httpx",
+        "urllib",
+        "socket",
+        "sqlite3",
+        "pathlib",
+        "ed_telemetry",
+        "ed_transport",
+        "ed_connector",
+        "ed_schema",
+    }
+
+    for py_file in domain_dir.rglob("*.py"):
+        if not py_file.is_file():
+            continue
+        tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    root_mod = alias.name.split(".")[0]
+                    assert (
+                        root_mod not in forbidden_modules
+                    ), f"Domain file {py_file.name} illegally imports I/O module: {alias.name}"
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                root_mod = node.module.split(".")[0]
+                assert (
+                    root_mod not in forbidden_modules
+                ), f"Domain file {py_file.name} illegally imports I/O module: {node.module}"

@@ -14,3 +14,4 @@ SDDs are living engineering baselines defining subsystem architectures, data str
 ## Design Documents Index
 
 * [SDD-002: ed-models Repository Scaffold and Hexagonal Setup](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-002_ed_models_repository_scaffold_and_hexagonal_setup.md)
+* [SDD-003: Domain Scope and Boundary Enforcement Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-003_domain_scope_and_boundary_enforcement_implementation.md)

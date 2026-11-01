@@ -61,40 +61,35 @@ We need explicit, deterministic architectural boundary rules and automated enfor
    * Permanent game entities (`ShipHull`, `ShipModule`, `CommodityEntity`, `Coordinates3D`) reside in their dedicated domain packages (`ships/`, `commodities/`, `spatial/`).
    * Event dataclasses in `events/` must reference or compose these canonical domain models rather than inventing transient duplicate structs.
 
-### 4.2 Type Mapping & Serialization Rules (ADR 0001 Section 4.6 Compliance)
+### 4.2 Contract Elasticity Boundary (Open vs. Closed Taxonomies)
 
-1. **Primitive Translation Matrix:**
-   * TypeScript `string` $\rightarrow$ `str`
-   * TypeScript `boolean` $\rightarrow$ `bool`
-   * TypeScript `number` (discrete/counts/credits/IDs) $\rightarrow$ `int`
-   * TypeScript `number` (physics/mass/coords/temperatures) $\rightarrow$ `float`
-   * TypeScript `bigint` / 64-bit ID $\rightarrow$ `int`
-   * TypeScript `Array<T>` $\rightarrow$ `list[T]` (never `typing.List`)
-   * TypeScript `field?: T` $\rightarrow$ `field: T | None = None` (never `typing.Optional`)
-2. **Closed-Set vs. Open-Set Taxonomies (RISK-02 Mitigation):**
-   * **Closed Sets ($\le 50$ items):** Frontier-defined discrete constants (`Allegiance`, `StarType`, `BodyType`, `PadSize`) MUST inherit from `enum.StrEnum` (Python 3.11+).
-   * **Open Sets ($> 100$ items):** Evolving Frontier taxonomies (Commodities, Engineering Blueprints, Micro-resources) MUST remain canonical string symbols (`str`) backed by $O(1)$ catalog lookup dictionaries to eliminate deserialization crashes on new content.
-3. **Bitfield Target Rule:**
-   * Cockpit telemetry bitmasks (`Flags`, `Flags2`) MUST inherit from `enum.IntFlag` (`StatusFlags`, `StatusFlags2`) with bitwise accessor properties.
+To eliminate deserialization crashes caused by upstream Frontier game updates (`RISK-02`):
+1. **The Closed Boundary ($\le 50$ items):**
+   * Frontier-defined discrete constants with fixed semantics (`Allegiance`, `StarType`, `BodyType`, `PadSize`) are permitted as strongly typed `enum.StrEnum` members.
+2. **The Open Boundary ($> 100$ items):**
+   * Expanding game taxonomies (Commodities, Engineering Blueprints, Suit Consumables) MUST NEVER be modeled as closed Python enums. They are bounded as canonical string symbols (`str`) backed by $O(1)$ catalog lookup dictionaries.
+   * If a journal event emits an uncataloged commodity or blueprint, the boundary parser hydrates the record with a fallback token rather than throwing a `ValueError` crash.
 
-### 4.3 Dataclass Construction & Inheritance Rules
+### 4.3 Polymorphic Event Hierarchy & Inheritance Boundary
 
-1. **Mandatory `kw_only=True` on Event Hierarchy (RISK-03 Mitigation):**
-   * Base class `JournalEvent(timestamp: datetime, event: str)` and all derived event subclasses MUST declare `@dataclass(kw_only=True)` to prevent default-argument ordering crashes.
-2. **Memory & Allocation Invariants (RISK-04 Mitigation):**
-   * Value objects (`Coordinates3D`, bounding boxes) MUST declare `@dataclass(frozen=True, slots=True)` (`HEXA-TRUTH-10`).
-   * All event models and domain entities MUST declare `@dataclass(slots=True)` to eliminate `__dict__` memory overhead during massive stream processing.
-3. **UTC Datetime Standardization:**
-   * All `timestamp` attributes must parse ISO 8601 wire strings into UTC `datetime.datetime` instances.
+To guarantee safe object instantiation without default-argument parameter ordering collisions (`RISK-03`):
+1. **Mandatory Keyword-Only Boundary:**
+   * Base class `JournalEvent(timestamp: datetime, event: str)` and all derived event subclasses MUST declare `@dataclass(kw_only=True)`.
+   * Non-keyword positional instantiation across the event boundary is strictly prohibited.
+2. **Memory Overhead Invariants (`RISK-04`):**
+   * All event models and domain entities MUST declare `@dataclass(slots=True)` to strip per-instance `__dict__` overhead during massive log stream processing.
+   * Pure value objects (`Coordinates3D`) MUST declare `@dataclass(frozen=True, slots=True)` enforcing mathematical immutability (`HEXA-TRUTH-10`).
 
-### 4.4 Naming Conventions & Wire Hydration
+### 4.4 Library Storage vs. External Fleet Scope Boundary
 
-1. **Field Naming Convention:**
-   * Domain attributes MUST conform to standard Python `snake_case` (`star_system`, `market_id`, `system_address`).
-   * Wire serialization / deserialization mappings convert Frontier `PascalCase` wire keys to Python `snake_case` fields.
-2. **Frontier Localization Dropping Invariant:**
-   * Frontier journals emit localized strings under `<Key>_Localised` only when translated. If identical to internal symbol, the localized key is omitted.
-   * Models MUST declare `name_localised: str | None = None` to handle omission gracefully.
+In accordance with ADR 0001 Section 4.4, `ed-models` enforces an absolute storage scope boundary:
+1. **Strictly Permitted Inside `ed-models`:**
+   * Pure entity blueprints, mathematical formulas (jump range, distance), and static metadata catalogs (~48 ship hulls, ~800 module specs, ~450 commodity definitions) packaged directly as in-memory code tables ($< 2$ MB total distribution).
+2. **Strictly Excluded & Delegated to Fleet Services:**
+   * The 200M star system galactic database $\rightarrow$ delegated to `ed-router` and Spansh.
+   * Live starport commodity prices and stock states $\rightarrow$ delegated to `ed-connector` (local SQLite/Redis cache) and `ed-schema` (EDDN).
+   * Host log tailing, directory watching, and OS file handles $\rightarrow$ delegated to `ed-telemetry`.
+   * Network requests, HTTP transports, and CAPI OAuth $\rightarrow$ delegated to `ed-transport`.
 
 ---
 
