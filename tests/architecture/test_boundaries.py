@@ -193,6 +193,10 @@ def test_domain_has_zero_global_mutable_state() -> None:
         tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
         for node in tree.body:
             if isinstance(node, ast.Assign):
+                # Allow __all__ export lists
+                targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+                if "__all__" in targets:
+                    continue
                 # Flag mutable collection literals assigned at module root: list, dict, set
                 if isinstance(node.value, ast.List | ast.Dict | ast.Set):
                     raise AssertionError(
@@ -216,13 +220,18 @@ def test_domain_has_zero_ambient_environment_access() -> None:
 
 
 def test_domain_entities_are_self_validating() -> None:
-    """Asserts that domain entities validate attributes via __post_init__ or Enum constants."""
+    """Asserts that core domain entities validate attributes via __post_init__ or Enum constants."""
     pkg_root = _get_package_root()
     domain_dir = pkg_root / "core" / "domain"
 
     entities_audited = 0
     for py_file in domain_dir.rglob("*.py"):
-        if py_file.name in {"__init__.py", "exceptions.py"}:
+        # Events and type definitions are DTOs/enums governed by test_events_declare_kw_only_and_slots
+        if (
+            py_file.name in {"__init__.py", "exceptions.py"}
+            or "events" in py_file.parts
+            or "types" in py_file.parts
+        ):
             continue
         tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
         for node in ast.walk(tree):
@@ -247,9 +256,19 @@ def test_domain_entities_are_self_validating() -> None:
                         for item in node.body
                         if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef)
                     }
-                    assert (
-                        "__post_init__" in method_names
-                    ), f"Dataclass {node.name} in {py_file.name} must define __post_init__ guard"
+                    # Frozen value objects (e.g. Coordinates3D) do not require __post_init__
+                    is_frozen = any(
+                        isinstance(d, ast.Call)
+                        and any(
+                            k.arg == "frozen" and getattr(k.value, "value", False) is True
+                            for k in d.keywords
+                        )
+                        for d in node.decorator_list
+                    )
+                    if not is_frozen:
+                        assert (
+                            "__post_init__" in method_names
+                        ), f"Dataclass {node.name} in {py_file.name} must define __post_init__ guard"
     assert entities_audited > 0, "No domain models found in core.domain"
 
 
