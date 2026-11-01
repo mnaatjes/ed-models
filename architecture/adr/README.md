@@ -19,3 +19,4 @@ This directory maintains immutable Architectural Decision Records (ADRs) conform
 * [ADR 0002: Domain Scope and Boundary Enforcement Mechanics](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/adr/0002_domain_scope_and_boundary_enforcement.md)
 * [ADR 0003: TypeScript Model Extraction and Domain Transformation Pipeline](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/adr/0003_typescript_model_extraction_and_transformation_pipeline.md)
 * [ADR 0004: Static Catalogs and Domain Entity Codification Architecture](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/adr/0004_static_catalogs_and_domain_entity_codification.md)
+* [ADR 0005: Harvesting and Codification of Remaining Game Domains](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/adr/0005_harvesting_and_codification_of_remaining_game_domains.md)
