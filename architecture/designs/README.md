@@ -16,3 +16,4 @@ SDDs are living engineering baselines defining subsystem architectures, data str
 * [SDD-002: ed-models Repository Scaffold and Hexagonal Setup](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-002_ed_models_repository_scaffold_and_hexagonal_setup.md)
 * [SDD-003: Domain Scope and Boundary Enforcement Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-003_domain_scope_and_boundary_enforcement_implementation.md)
 * [SDD-004: TypeScript Model Extraction and Domain Transformation Pipeline Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-004_typescript_model_extraction_and_transformation_pipeline_implementation.md)
+* [SDD-005: Static Catalogs and Domain Entity Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-005_static_catalogs_and_domain_entity_implementation.md)
