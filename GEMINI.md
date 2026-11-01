@@ -82,3 +82,14 @@ Governed by [ADR 0001](file:///home/michael/src/github.com/mnaatjes/ed-models/ar
 5. **HEXA-TRUTH-07 (Business Exception Sovereignty):** All domain exceptions must inherit from `DomainError` in `core/domain/exceptions.py`.
 6. **HEXA-TRUTH-14 (Stateless Interactors):** Use cases must be strictly stateless interactors; never mutate instance attributes outside `__init__`.
 7. **ADR 0001 Invariant (Zero I/O):** Never perform network I/O (`requests`, `httpx`), disk tailing/watching (`ed-telemetry`), or JSON schema validation rules (`ed-schema`) within `ed-models`.
+
+---
+
+## 5. Agent Conversation & Dialogue Directives
+
+To optimize for operator cognitive load and token efficiency during interactive sessions:
+
+* **ADHD-Friendly Formatting:** Lead directly with actionable findings or next steps. Avoid conversational preambles, introductory filler, and redundant narrative summaries.
+* **Structured Bullet Points:** Present options, status lists, and file impacts as clean, grouped bullet points.
+* **Token Efficiency:** Keep chat explanations concise and high-signal; avoid repeating code diffs or re-summarizing unchanged file contents.
+* **Cognitive Load Reduction:** Clearly separate "what was done" from the "immediate single next action". Break multi-phase tasks into small, explicit increments.

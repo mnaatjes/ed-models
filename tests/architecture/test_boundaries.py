@@ -1009,3 +1009,69 @@ def test_domain_has_zero_io_imports() -> None:
                 assert (
                     root_mod not in forbidden_modules
                 ), f"Domain file {py_file.name} illegally imports I/O module: {node.module}"
+
+
+def test_facade_driving_adapter_method_boundaries() -> None:
+    """Asserts that EliteDomainFacade only exposes methods adhering to the three permitted pillars."""
+    pkg_root = _get_package_root()
+    facade_file = pkg_root / "adapters" / "driving" / "facade.py"
+    assert facade_file.is_file(), "EliteDomainFacade file missing in adapters/driving/"
+
+    permitted_prefixes = (
+        "get_",
+        "list_",
+        "normalize_",
+        "parse_",
+        "calculate_",
+        "format_",
+        "serialize_",
+    )
+    forbidden_type_names = {
+        "Path",
+        "IO",
+        "BinaryIO",
+        "TextIO",
+        "Socket",
+        "Request",
+        "Response",
+        "Session",
+        "Cursor",
+    }
+
+    tree = ast.parse(facade_file.read_text(encoding="utf-8"), filename=str(facade_file))
+    facade_found = False
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef) and node.name == "EliteDomainFacade":
+            facade_found = True
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef) and not item.name.startswith("_"):
+                    # 1. Enforce allowed prefix
+                    assert item.name.startswith(
+                        permitted_prefixes
+                    ), f"Facade method {item.name} violates permitted method prefixes: {permitted_prefixes}"
+
+                    # 2. Enforce no forbidden types in arguments
+                    for arg in item.args.args:
+                        if arg.annotation:
+                            type_name = (
+                                arg.annotation.id
+                                if isinstance(arg.annotation, ast.Name)
+                                else getattr(arg.annotation, "attr", None)
+                            )
+                            assert (
+                                type_name not in forbidden_type_names
+                            ), f"Facade method {item.name} accepts forbidden type: {type_name}"
+
+                    # 3. Enforce no forbidden types in returns
+                    if item.returns:
+                        ret_name = (
+                            item.returns.id
+                            if isinstance(item.returns, ast.Name)
+                            else getattr(item.returns, "attr", None)
+                        )
+                        assert (
+                            ret_name not in forbidden_type_names
+                        ), f"Facade method {item.name} returns forbidden type: {ret_name}"
+
+    assert facade_found, "EliteDomainFacade class definition not found in facade.py"
