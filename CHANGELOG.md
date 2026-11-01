@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented `scripts/extract_models.py` build-time code generator in `scripts/`.
 - Synthesized base `JournalEvent` (`slots=True`, `kw_only=True`) and 284+ journal event models partitioned across 11 category packages (`carrier`, `combat`, `exploration`, `odyssey`, `other`, `powerplay`, `squadrons`, `startup`, `station`, `trade`, `travel`).
 - Synthesized universal domain types (`StarType`, `BodyType`, `StationService`, `StationType`, `PlanetClass`, `PowerState1`, `PowerState2`, `PowerState`) and pure spatial vector `Coordinates3D`.
+- Authored ADR 0004 defining static catalogs (ships, modules, commodities) and core domain entities.
+- Authored SDD-005 specifying static catalog driven adapters, secondary driven ports, and harvester tooling.
+- Implemented `scripts/compile_catalogs.py` harvesting `EDCD/EDDI` and `EDMarketConnector`.
+- Implemented pure domain entities `ShipHull`, `ShipModule`, and `CommodityEntity` with invariant validation guards.
+- Implemented `Manufacturer`, `PadSize`, and `CommodityCategory` StrEnums.
+- Implemented secondary driven ports `ShipCatalogProviderPort`, `ModuleCatalogProviderPort`, and `CommodityCatalogProviderPort`.
+- Implemented in-memory static driven adapters in `src/ed_models/adapters/driven/static_catalogs/` (47 ship hulls, 1,260 outfitting modules, 444 commodities with safe fallback for uncataloged items).
+- Added in-memory test doubles in `tests/doubles/fake_catalogs.py`.
 
 ## [0.1.0] - 2026-11-01
 
