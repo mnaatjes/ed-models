@@ -15,3 +15,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture documentation tree aligned with Unified Process disciplines (`risk/`, `use-cases/`, `adr/`, `designs/`, `rfcs/`, `api/`).
 - Migrated foundational ADR 0001 (Pure Domain Architecture, Catalogs & Facade) and SDD-002 (Repository Scaffold and Setup).
 - Architectural layer boundary tests enforcing `HEXA-TRUTH-01` through `HEXA-TRUTH-17`.
+
+<!-- Conversation ID: 35fc6240-8370-4435-b40a-d95be1c01c97 -->
