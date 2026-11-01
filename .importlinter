@@ -4,52 +4,48 @@ root_packages =
 include_external_packages = True
 
 [importlinter:contract:core_domain_isolation]
-name = core_domain_isolation
+name = Core domain isolation
 type = forbidden
 source_modules =
     ed_models.core.domain
 forbidden_modules =
     ed_models.adapters
-    external
-    frameworks
+    ed_models.bootstrap
+    ed_models.core.ports
+    ed_models.core.use_cases
 
-[importlinter:contract:inward_dependency_direction]
-name = inward_dependency_direction
+[importlinter:contract:types_subdomain_isolation]
+name = Types subdomain isolation
+type = forbidden
+source_modules =
+    ed_models.core.domain.types
+forbidden_modules =
+    ed_models.core.domain.events
+    ed_models.core.domain.ships
+    ed_models.core.domain.commodities
+
+[importlinter:contract:hexagonal_layering]
+name = Hexagonal layers
 type = layers
 layers =
-    ed_models.adapters
-    ed_models.core.use_cases
-    ed_models.core.domain
-
-[importlinter:contract:domain_port_isolation]
-name = domain_port_isolation
-type = forbidden
-source_modules =
-    ed_models.core.domain
-forbidden_modules =
-    ed_models.core.ports
-    ed_models.core.use_cases
-
-[importlinter:contract:use_case_transport_isolation]
-name = use_case_transport_isolation
-type = forbidden
-source_modules =
-    ed_models.core.use_cases
-forbidden_modules =
-    ed_models.adapters
-    fastapi
-    starlette
-    flask
-    click
-    typer
-
-[importlinter:contract:composition_root_isolation]
-name = composition_root_isolation
-type = forbidden
-source_modules =
-    ed_models.core.domain
-    ed_models.core.ports
-    ed_models.core.use_cases
-    ed_models.adapters
-forbidden_modules =
     ed_models.bootstrap
+    ed_models.adapters
+    ed_models.core.use_cases
+    ed_models.core.ports
+    ed_models.core.domain
+
+[importlinter:contract:zero_io_in_core]
+name = Zero I/O in core
+type = forbidden
+source_modules =
+    ed_models.core
+forbidden_modules =
+    httpx
+    requests
+    urllib
+    socket
+    sqlite3
+    ed_telemetry
+    ed_transport
+    ed_connector
+    ed_schema
