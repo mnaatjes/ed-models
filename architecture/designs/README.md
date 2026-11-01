@@ -19,3 +19,4 @@ SDDs are living engineering baselines defining subsystem architectures, data str
 * [SDD-005: Static Catalogs and Domain Entity Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-005_static_catalogs_and_domain_entity_implementation.md)
 * [SDD-006: Harvesting and Codification of Remaining Game Domains Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-006_harvesting_and_codification_of_remaining_game_domains_implementation.md)
 * [SDD-007: Factions BGS and Interop Domain Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-007_factions_bgs_and_interop_domain_implementation.md)
+* [SDD-008: Driving Facade Capability Boundaries Implementation](file:///home/michael/src/github.com/mnaatjes/ed-models/architecture/designs/SDD-008_driving_facade_capability_boundaries_implementation.md)

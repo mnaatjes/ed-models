@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
+from ..adapters.driven.static_catalogs.commodities_catalog import StaticCommodityCatalogAdapter
+from ..adapters.driven.static_catalogs.engineering_catalog import StaticEngineeringCatalogAdapter
+from ..adapters.driven.static_catalogs.modules_catalog import StaticModuleCatalogAdapter
+from ..adapters.driven.static_catalogs.ships_catalog import StaticShipCatalogAdapter
 from ..adapters.driven.system_probe import OsSystemProbeAdapter
 from ..adapters.driving.cli_health import CliHealthAdapter
+from ..adapters.driving.facade import EliteDomainFacade
 from ..core.ports.driven.probe_port import SystemProbePort
 from ..core.ports.driving.health_port import GetHealthPort
 from ..core.use_cases.check_health import CheckHealthUseCase
+from ..core.use_cases.execute_jump_calculation import ExecuteJumpCalculationUseCase
 
 
 class Container:
@@ -35,3 +41,13 @@ class Container:
         """Instantiates driving adapter with injected use case."""
         use_case = self.build_health_use_case()
         return CliHealthAdapter(health_service=use_case)
+
+    def build_elite_domain_facade(self) -> EliteDomainFacade:
+        """Instantiates the unified EliteDomainFacade with wired static catalogs and use cases."""
+        return EliteDomainFacade(
+            ship_catalog=StaticShipCatalogAdapter(),
+            module_catalog=StaticModuleCatalogAdapter(),
+            commodity_catalog=StaticCommodityCatalogAdapter(),
+            engineering_catalog=StaticEngineeringCatalogAdapter(),
+            jump_calculator=ExecuteJumpCalculationUseCase(),
+        )
