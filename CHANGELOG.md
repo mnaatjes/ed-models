@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Authored ADR 0002 defining domain scope boundaries, contract elasticity, and inheritance rules.
+- Authored SDD-003 and implemented 4-tier automated boundary enforcement gates (Pre-commit, AST Pytest suite, Import Linter, and CI).
+- Authored ADR 0003 establishing offline TypeScript AST extraction pipeline for harvesting `kayahr/ed-journal`.
+- Authored SDD-004 specifying extraction pipeline architecture, lexical parsing rules, hoister logic, and code synthesis.
+- Implemented `scripts/extract_models.py` build-time code generator in `scripts/`.
+- Synthesized base `JournalEvent` (`slots=True`, `kw_only=True`) and 284+ journal event models partitioned across 11 category packages (`carrier`, `combat`, `exploration`, `odyssey`, `other`, `powerplay`, `squadrons`, `startup`, `station`, `trade`, `travel`).
+- Synthesized universal domain types (`StarType`, `BodyType`, `StationService`, `StationType`, `PlanetClass`, `PowerState1`, `PowerState2`, `PowerState`) and pure spatial vector `Coordinates3D`.
+
 ## [0.1.0] - 2026-11-01
 
 ### Added
