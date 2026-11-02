@@ -78,6 +78,52 @@ def test_facade_token_normalization_and_telemetry() -> None:
     assert getattr(event, "StarSystem", None) == "Sol"
     assert getattr(event, "JumpDist", None) == 42.15
 
+    # Polymorphic Scan parsing
+    star_scan = facade.parse_journal_event(
+        {
+            "timestamp": "2026-11-02T04:00:00Z",
+            "event": "Scan",
+            "BodyName": "Sol",
+            "StarType": "G",
+            "StellarMass": 1.0,
+        }
+    )
+    assert type(star_scan).__name__ == "ScanStar"
+    assert getattr(star_scan, "StarType", None) == "G"
+
+    planet_scan = facade.parse_journal_event(
+        {
+            "timestamp": "2026-11-02T04:00:00Z",
+            "event": "Scan",
+            "BodyName": "Earth",
+            "PlanetClass": "Earthlike body",
+            "MassEM": 1.0,
+        }
+    )
+    assert type(planet_scan).__name__ == "ScanPlanet"
+    assert getattr(planet_scan, "PlanetClass", None) == "Earthlike body"
+
+    other_scan = facade.parse_journal_event(
+        {
+            "timestamp": "2026-11-02T04:00:00Z",
+            "event": "Scan",
+            "BodyName": "Sol A Belt Cluster 1",
+            "ScanType": "AutoScan",
+        }
+    )
+    assert type(other_scan).__name__ == "ScanOther"
+
+    # GameModeChange parsing
+    mode_event = facade.parse_journal_event(
+        {
+            "timestamp": "2026-11-02T04:00:00Z",
+            "event": "GameModeChange",
+            "GameMode": "MainGame",
+        }
+    )
+    assert type(mode_event).__name__ == "GameModeChange"
+    assert getattr(mode_event, "GameMode", None) == "MainGame"
+
 
 def test_facade_pure_math_and_interop() -> None:
     """Verifies FSD jump calculation and interop serialization via facade."""

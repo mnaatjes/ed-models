@@ -4,6 +4,7 @@ from ed_models.core.domain.events.startup.cargo import Cargo, CargoVessel
 from ed_models.core.domain.events.startup.clear_saved_game import ClearSavedGame
 from ed_models.core.domain.events.startup.commander import Commander
 from ed_models.core.domain.events.startup.fileheader import Fileheader
+from ed_models.core.domain.events.startup.game_mode_change import GameModeChange
 from ed_models.core.domain.events.startup.load_game import GameMode, LoadGame
 from ed_models.core.domain.events.startup.loadout import Loadout
 from ed_models.core.domain.events.startup.materials import Material, Materials
@@ -23,6 +24,7 @@ __all__ = [
     "Commander",
     "Fileheader",
     "GameMode",
+    "GameModeChange",
     "LoadGame",
     "Loadout",
     "Material",
