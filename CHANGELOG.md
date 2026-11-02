@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-01
+
 ### Fixed
 - Fixed polymorphic `Scan` deserialization in `parse_journal_event` to dynamically resolve into concrete domain dataclasses (`ScanStar`, `ScanPlanet`, or `ScanOther`) based on payload discriminators (`StarType`, `PlanetClass`).
 

@@ -1,6 +1,6 @@
 # ed-models
 
-[![Version](https://img.shields.io/badge/version-v0.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.1-blue.svg)](CHANGELOG.md)
 
 Pure hexagonal domain models, game-logic calculators, and static catalogs for Elite Dangerous fleet integrations
 
