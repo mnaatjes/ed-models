@@ -34,7 +34,17 @@ def parse_journal_event(payload: dict[str, Any]) -> JournalEvent:
     event_name = str(payload.get("event", "JournalEvent"))
     lookup_key = event_name.lower().replace("_", "")
 
-    cls = _EVENT_REGISTRY.get(lookup_key, _EVENT_REGISTRY.get(event_name.lower(), JournalEvent))
+    # Polymorphic Frontier Journal event resolution
+    cls: type[JournalEvent]
+    if lookup_key == "scan":
+        if "StarType" in payload and payload.get("StarType") is not None:
+            cls = ev_module.ScanStar
+        elif "PlanetClass" in payload and payload.get("PlanetClass") is not None:
+            cls = ev_module.ScanPlanet
+        else:
+            cls = ev_module.ScanOther
+    else:
+        cls = _EVENT_REGISTRY.get(lookup_key, _EVENT_REGISTRY.get(event_name.lower(), JournalEvent))
 
     # Match attributes to class slots / fields
     fields: dict[str, Any] = {}
