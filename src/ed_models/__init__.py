@@ -39,7 +39,7 @@ from ed_models.core.domain.spatial.coordinates import Coordinates3D
 from ed_models.core.domain.status.flags import StatusFlags, StatusFlags2
 from ed_models.core.domain.status.telemetry import StatusTelemetry
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 def create_domain_facade() -> EliteDomainFacade:

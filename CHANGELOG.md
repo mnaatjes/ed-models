@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-01
+
 ### Added
 - Authored ADR 0002 defining domain scope boundaries, contract elasticity, and inheritance rules.
 - Authored SDD-003 and implemented 4-tier automated boundary enforcement gates (Pre-commit, AST Pytest suite, Import Linter, and CI).
